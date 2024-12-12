@@ -1,11 +1,11 @@
-import Image from "next/image";
 import { getDatabase } from '@/lib/apiClient'
 import Link from "next/link";
 import slugify from "slugify";
+import { PageObjectResponse } from "@notionhq/client/build/src/api-endpoints";
 
 const getPosts = async () => {
   const posts = await getDatabase();
-  return posts
+  return posts as PageObjectResponse[]
 }
 
 export default async function Page() {
@@ -15,7 +15,7 @@ export default async function Page() {
       <h3 className="text-4xl font-bold">Blog app powered by Notion API</h3>
       {
         posts?.length && posts.map((post) => {
-          const slug = slugify(post.properties?.Slug?.rich_text[0].text.content);
+          const slug = slugify(post.properties?.Slug?.rich_text[0].plain_text);
           return (
             <div>
               <Link href={{
@@ -24,7 +24,7 @@ export default async function Page() {
                   page_id: post.id
                 }
               }} key={post.id}>
-                <h3 className="text-3xl">{post.properties?.Title?.title[0]?.text.content}</h3>
+                <h3 className="text-3xl">{post.properties?.Title?.title[0]?.plain_text}</h3>
               </Link>
               <p className="text-xs">{new Date(post.last_edited_time).toLocaleString()}</p>
             </div>
