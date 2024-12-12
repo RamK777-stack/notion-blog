@@ -5,10 +5,24 @@ const notion = new Client({
 })
 
 export const getDatabase = async () => {
-    console.log(process.env.NOTION_TOKEN)
     const response = await notion.databases.query({
         database_id: process.env.NOTION_DATABASE_ID!,
     })
-    console.log(response.results)
     return response.results
+}
+
+export const getPages = async (page_id: string) => {
+    const response = await notion.pages.retrieve({
+        page_id: page_id
+    })
+    return response
+}
+
+//Pages are blocks so page_id is block_id
+export const getBlocks = async (page_id: string) => {
+    const response = await notion.blocks.children.list({
+        block_id: page_id,
+        page_size: 50,
+    });
+    return response.results;
 }
